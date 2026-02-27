@@ -1,4 +1,3 @@
-# services/auth_service.py
 import bcrypt
 from models.utilisateur import Utilisateur
 from database import BaseDeDonnees
@@ -50,4 +49,3 @@ class AuthService:
     def logout(self):
         self._session_utilisateur = None
         print("Déconnecté.")
-        

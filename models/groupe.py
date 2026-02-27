@@ -20,3 +20,5 @@ class Groupe:
     @property
     def type_evenement(self):
         return self._type_evenement
+    
+    
