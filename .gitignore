@@ -1,0 +1,6 @@
+# Environnement
+.env
+
+# Fichiers Python
+*.pyc
+__pycache__/
