@@ -24,6 +24,7 @@ class AuthService:
         except Exception as e:
             print("Erreur inscription :", e)
 
+
     def login(self, email, mot_de_passe):
         self._db.curseur.execute(
             "SELECT * FROM utilisateurs WHERE email=%s",
