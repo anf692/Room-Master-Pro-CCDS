@@ -28,7 +28,7 @@ class PlanningService:
         date_mysql = self._format_date_mysql(date_fr)
 
         sql = """
-        SELECT c.id_creneau, c.heure_debut, c.heure_fin, g.nom_groupe, g.responsable, g.type_evenement
+        SELECT c.id_creneau, c.heure_debut, c.heure_fin, g.nom_groupe, g.responsable, r.type_evenement
         FROM creneaux c
         LEFT JOIN reservations r ON c.id_creneau = r.id_creneau AND r.date_reservation=%s
         LEFT JOIN groupes g ON r.id_groupe = g.id_groupe
@@ -51,7 +51,7 @@ class PlanningService:
             })
         return planning
 
-    def ajouter_groupe(self, session_utilisateur, nom_groupe, responsable, type_evenement):
+    def ajouter_groupe(self, session_utilisateur, nom_groupe, responsable):
         if session_utilisateur is None:
             print("Veuillez vous connecter.")
             return False
@@ -73,8 +73,8 @@ class PlanningService:
 
             # Insertion
             self._db.curseur.execute(
-                "INSERT INTO groupes (nom_groupe, responsable, type_evenement) VALUES (%s, %s, %s)",
-                (nom_groupe, responsable, type_evenement)
+                "INSERT INTO groupes (nom_groupe, responsable) VALUES (%s, %s)",
+                (nom_groupe, responsable)
             )
 
             self._db.commit()
@@ -85,7 +85,6 @@ class PlanningService:
             print("Erreur lors de l'ajout du groupe :", e)
             return False
         
-
     def affichage_groupe(self):
         self._db.curseur.execute("SELECT * FROM groupes")
         resultats = self._db.curseur.fetchall()
@@ -107,11 +106,49 @@ class PlanningService:
             print(f"ID Créneau : {creneau['id_creneau']} | {heure_debut} - {heure_fin}")
         print("")
 
-    def reserver_creneau(self, session_utilisateur, id_creneau, id_groupe, date_fr):
+    # def reserver_creneau(self, session_utilisateur, id_creneau, id_groupe, date_fr):
+    #     if session_utilisateur is None:
+    #         print("Veuillez vous connecter.")
+    #         return False
+        
+    #     if session_utilisateur.role not in ['ADMIN', 'GESTIONNAIRE']:
+    #         print("Permission refusée.")
+    #         return False
+
+    #     try:
+    #         date_mysql = self._format_date_mysql(date_fr)
+
+    #         # Vérifier si déjà réservé
+    #         self._db.curseur.execute(
+    #             "SELECT * FROM reservations WHERE date_reservation=%s AND id_creneau=%s",
+    #             (date_mysql, id_creneau)
+    #         )
+
+    #         if self._db.curseur.fetchone():
+    #             print("Ce créneau est déjà réservé !")
+    #             return False
+
+    #         # Insérer réservation
+    #         self._db.curseur.execute(
+    #             "INSERT INTO reservations (date_reservation, id_creneau, id_groupe) VALUES (%s,%s,%s)",
+    #             (date_mysql, id_creneau, id_groupe)
+    #         )
+
+    #         self._db.commit()
+    #         print("Réservation réussie !")
+    #         return True
+
+    #     except Exception as e:
+    #         print("Erreur lors de la réservation :", e)
+    #         return False
+      
+        
+    def reserver_creneaux(self, session_utilisateur, ids_creneaux, id_groupe, date_fr, type_evenement):
+
         if session_utilisateur is None:
             print("Veuillez vous connecter.")
             return False
-        
+
         if session_utilisateur.role not in ['ADMIN', 'GESTIONNAIRE']:
             print("Permission refusée.")
             return False
@@ -119,27 +156,36 @@ class PlanningService:
         try:
             date_mysql = self._format_date_mysql(date_fr)
 
-            # Vérifier si déjà réservé
-            self._db.curseur.execute(
-                "SELECT * FROM reservations WHERE date_reservation=%s AND id_creneau=%s",
-                (date_mysql, id_creneau)
-            )
+            # Vérification de tous les créneaux
+            for id_creneau in ids_creneaux:
+                self._db.curseur.execute(
+                    "SELECT 1 FROM reservations WHERE date_reservation=%s AND id_creneau=%s",
+                    (date_mysql, id_creneau)
+                )
+                if self._db.curseur.fetchone():
+                    print(f"Le créneau {id_creneau} est déjà réservé.")
+                    return False
 
-            if self._db.curseur.fetchone():
-                print("Ce créneau est déjà réservé !")
-                return False
-
-            # Insérer réservation
-            self._db.curseur.execute(
-                "INSERT INTO reservations (date_reservation, id_creneau, id_groupe) VALUES (%s,%s,%s)",
-                (date_mysql, id_creneau, id_groupe)
-            )
+            # Insertion de tous les créneaux
+            for id_creneau in ids_creneaux:
+                self._db.curseur.execute(
+                    """
+                    INSERT INTO reservations 
+                    (date_reservation, id_creneau, id_groupe, type_evenement) 
+                    VALUES (%s,%s,%s,%s)
+                    """,
+                    (date_mysql, id_creneau, id_groupe, type_evenement)
+                )
 
             self._db.commit()
-            print("Réservation réussie !")
+            print("Réservations effectuées avec succès !")
             return True
 
         except Exception as e:
+            self._db.rollback()
             print("Erreur lors de la réservation :", e)
             return False
+        
+
+
         

@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.45, for Linux (x86_64)
 --
--- Host: localhost    Database: douta_seck
+-- Host: localhost    Database: Douta_seck
 -- ------------------------------------------------------
 -- Server version	8.0.45-0ubuntu0.24.04.1
 
@@ -52,10 +52,9 @@ CREATE TABLE `groupes` (
   `id_groupe` int NOT NULL AUTO_INCREMENT,
   `nom_groupe` varchar(100) NOT NULL,
   `responsable` varchar(100) NOT NULL,
-  `type_evenement` enum('Atelier','Réunion','Conférence','Cours') NOT NULL,
   `date_creation` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_groupe`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -64,7 +63,7 @@ CREATE TABLE `groupes` (
 
 LOCK TABLES `groupes` WRITE;
 /*!40000 ALTER TABLE `groupes` DISABLE KEYS */;
-INSERT INTO `groupes` VALUES (1,'Simplon senegal','Saliou TALLA','Réunion','2026-02-27 15:24:15'),(2,'ISEP-AT','Dr Sarr','Conférence','2026-02-27 15:39:33');
+INSERT INTO `groupes` VALUES (1,'Simplon Senegal','Saliou TALLA','2026-03-02 13:43:26');
 /*!40000 ALTER TABLE `groupes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -80,6 +79,7 @@ CREATE TABLE `reservations` (
   `date_reservation` date NOT NULL,
   `id_creneau` int NOT NULL,
   `id_groupe` int NOT NULL,
+  `type_evenement` enum('Conference','Atelier','Reunion','Cours') NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_reservation`),
   UNIQUE KEY `date_reservation` (`date_reservation`,`id_creneau`),
@@ -87,7 +87,7 @@ CREATE TABLE `reservations` (
   KEY `id_groupe` (`id_groupe`),
   CONSTRAINT `reservations_ibfk_1` FOREIGN KEY (`id_creneau`) REFERENCES `creneaux` (`id_creneau`) ON DELETE CASCADE,
   CONSTRAINT `reservations_ibfk_2` FOREIGN KEY (`id_groupe`) REFERENCES `groupes` (`id_groupe`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -96,7 +96,7 @@ CREATE TABLE `reservations` (
 
 LOCK TABLES `reservations` WRITE;
 /*!40000 ALTER TABLE `reservations` DISABLE KEYS */;
-INSERT INTO `reservations` VALUES (1,'2026-02-27',1,1,'2026-02-27 15:24:53');
+INSERT INTO `reservations` VALUES (1,'2026-03-02',1,1,'Reunion','2026-03-02 13:44:15'),(2,'2026-03-02',2,1,'Reunion','2026-03-02 13:44:15');
 /*!40000 ALTER TABLE `reservations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -116,7 +116,7 @@ CREATE TABLE `utilisateurs` (
   `date_creation` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_user`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -125,7 +125,7 @@ CREATE TABLE `utilisateurs` (
 
 LOCK TABLES `utilisateurs` WRITE;
 /*!40000 ALTER TABLE `utilisateurs` DISABLE KEYS */;
-INSERT INTO `utilisateurs` VALUES (1,'assane fall','a@gmail.com','$2b$12$4n6T2CY6kfokR7ektgwsCuqFh0EG6e6.3o2ZVWivXiVxKGvNgLoSu','ADMIN','2026-02-27 11:58:28'),(2,'visiteur','v@gmail.com','$2b$12$q0p3zF/Td0QFqBjbWyBXIunHVH3jGgIj0EoL420HpflUEMVvc8qcS','VISITEUR','2026-02-27 13:42:46');
+INSERT INTO `utilisateurs` VALUES (1,'admin','a@gmail.com','$2b$12$lADTqEfrbdRxTXjq4tlinuf1l3GDJchJQLuB/foe5wmwnw/nUanCq','ADMIN','2026-03-02 13:14:02'),(2,'Visiteur','v@gmail.com','$2b$12$UqnNDcdB32ej5KK7C3Ox5e77YnyjT6435oF1fkR.OrC3YDfuckeeK','VISITEUR','2026-03-02 13:14:26'),(3,'gestion','g@gmail.com','$2b$12$XOB1jcieWtu6f8II0RIpKOc57Ts7if9sxmeemRBBQI4IqI/7ha/5e','GESTIONNAIRE','2026-03-02 13:14:46');
 /*!40000 ALTER TABLE `utilisateurs` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -138,4 +138,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-27 16:21:19
+-- Dump completed on 2026-03-02 13:48:26

@@ -40,4 +40,9 @@ class BaseDeDonnees:
         if self._connexion:
             self._curseur.close()
             self._connexion.close()
+
+    def rollback(self):
+        self._connexion.rollback()
+    
+
     

@@ -128,69 +128,119 @@ class Application:
                                         f"{ligne['responsable']:<15} "
                                         f"{ligne['type_evenement']:<12}")
 
+                        # case "2":
+                        #     self.planning.affichage_creneau()
+                        #     self.planning.affichage_groupe()
+                        #     if role in ["ADMIN", "GESTIONNAIRE"]:
+                        #         try:
+                        #             while True:
+                        #                 id_creneau = int(input("ID Créneau : ").strip().replace(" ", ""))
+                        #                 if not  id_creneau:
+                        #                     print("ID doit etre un nombre")
+                        #                 else:
+                        #                     break
+                                
+                        #             while True:
+                        #                 id_groupe = int(input("ID Groupe : ").strip().replace(" ", ""))
+                        #                 if not  id_creneau:
+                        #                     print("ID doit etre un nombre")
+                        #                 else:
+                        #                     break
+
+                        #             date = input("Date (jj/mm/aaaa) : ").strip().replace(" ", "")
+
+                        #             self.planning.reserver_creneau(
+                        #                 user, id_creneau, id_groupe, date
+                        #             )
+                        #         except Exception as e:
+                        #             print("Erreur lors de la reservation", e)
+
+                        #     else:
+                        #         self.auth.logout()
+                        #         print("Déconnecté.")
+                        
                         case "2":
                             self.planning.affichage_creneau()
                             self.planning.affichage_groupe()
+
                             if role in ["ADMIN", "GESTIONNAIRE"]:
                                 try:
+                                    # Saisie multiple des créneaux
                                     while True:
-                                        id_creneau = int(input("ID Créneau : ").strip().replace(" ", ""))
-                                        if not  id_creneau:
-                                            print("ID doit etre un nombre")
-                                        else:
+                                        ids_input = input("ID Créneaux (séparés par virgule ex: 1,2,3) : ").strip().replace(" ", "")
+
+                                        if not ids_input:
+                                            print("Veuillez entrer au moins un ID.")
+                                            continue
+
+                                        try:
+                                            ids_creneaux = [int(x) for x in ids_input.split(",")]
                                             break
-                                    
+                                        except ValueError:
+                                            print("Format invalide. Exemple valide : 1,2,3")
+
+                                    # ID Groupe
                                     while True:
-                                        id_groupe = int(input("ID Groupe : ").strip().replace(" ", ""))
-                                        if not  id_creneau:
-                                            print("ID doit etre un nombre")
+                                        try:
+                                            id_groupe = int(input("ID Groupe : ").strip())
+                                            break
+                                        except ValueError:
+                                            print("ID Groupe doit être un nombre.")
+
+                                    #Motif
+                                    while True:
+                                        type_evenement = input("Type d'événement (Atelier, Réunion, Conférence, Cours): ").strip().capitalize().replace(" ", "")
+                                        if type_evenement not in ["Atelier","Reunion", "Conference","Cours"]:
+                                            print("Type d'evenement invalide")
                                         else:
                                             break
 
-                                    date = input("Date (jj/mm/aaaa) : ").strip().replace(" ", "")
+                                    # Date
+                                    while True:
+                                        date = input("Date (jj/mm/aaaa) : ").strip()
+                                        if date:
+                                            break
+                                        print("La date est obligatoire.")
 
-                                    self.planning.reserver_creneau(
-                                        user, id_creneau, id_groupe, date
+                                    # Appel nouvelle méthode multiple
+                                    self.planning.reserver_creneaux(
+                                        user,
+                                        ids_creneaux,
+                                        id_groupe,
+                                        date,
+                                        type_evenement
                                     )
+
                                 except Exception as e:
-                                    print("Erreur lors de la reservation", e)
+                                    print("Erreur lors de la réservation :", e)
 
                             else:
-                                self.auth.logout()
-                                print("Déconnecté.")
+                                print("Permission refusée.")
 
                         case "3":
                             if role in ["ADMIN", "GESTIONNAIRE"]:
                                 try:
                                     while True:
                                         nom = input("Nom du groupe : ").strip()
-                                        if not nom.isalpha():
+                                        if not nom.replace(" ", "").isalpha():
                                             print("Nom invalide")
                                         else:
                                             break
 
                                     while True:
                                         responsable = input("Responsable : ").strip()
-                                        if not responsable.isalpha():
+                                        if not responsable.replace(" ", "").isalpha():
                                             print("Responsable invalide")
-                                        else:
-                                            break
-
-                                    while True:
-                                        type_evenement = input("Type d'événement (Atelier, Réunion, Conférence, Cours): ").strip().capitalize().replace(" ", "")
-                                        if type_evenement not in ["Atelier","Réunion", "Conférence","Cours"]:
-                                            print("Type d'evenement invalide")
                                         else:
                                             break
 
                                     self.planning.ajouter_groupe(
                                         user,
                                         nom,
-                                        responsable,
-                                        type_evenement
+                                        responsable
                                     )
                                 except Exception as e:
-                                    print ("Erreur lors de l'ajout du groupe")
+                                    print ("Erreur lors de l'ajout du groupe",e)
                             else:
                                 print("Choix invalide.")
 
@@ -221,3 +271,4 @@ class Application:
 
 app = Application()
 app.lancer()
+

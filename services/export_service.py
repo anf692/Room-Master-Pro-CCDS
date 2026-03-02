@@ -18,7 +18,7 @@ class ExportService:
         date_mysql = self.format_date_mysql(date_fr)
 
         sql = """
-        SELECT c.heure_debut, c.heure_fin, g.nom_groupe, g.type_evenement, g.responsable
+        SELECT c.heure_debut, c.heure_fin, g.nom_groupe, r.type_evenement, g.responsable
         FROM creneaux c
         LEFT JOIN reservations r 
             ON c.id_creneau = r.id_creneau 

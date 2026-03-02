@@ -3,8 +3,8 @@
 -- Gestion des réservations de la salle polyvalente
 -- =====================================================
 
-CREATE DATABASE douta_seck;
-USE douta_seck;
+CREATE DATABASE Douta_seck;
+USE Douta_seck;
 
 -- TABLE : utilisateurs
 CREATE TABLE utilisateurs (
@@ -22,7 +22,6 @@ CREATE TABLE groupes (
     id_groupe INT AUTO_INCREMENT PRIMARY KEY,
     nom_groupe VARCHAR(100) NOT NULL,
     responsable VARCHAR(100) NOT NULL,
-    type_evenement ENUM('Atelier', 'Réunion', 'Conférence', 'Cours') NOT NULL,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -35,13 +34,13 @@ CREATE TABLE creneaux (
     CONSTRAINT chk_heure CHECK (heure_fin > heure_debut)
 );
 
-
 -- TABLE : reservations
 CREATE TABLE reservations (
     id_reservation INT AUTO_INCREMENT PRIMARY KEY,
     date_reservation DATE NOT NULL,
     id_creneau INT NOT NULL,
     id_groupe INT NOT NULL,
+    type_evenement ENUM('Conference', 'Atelier', 'Reunion', 'Cours') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (id_creneau)
