@@ -26,16 +26,57 @@ class Application:
                 choix = input("Votre choix : ").strip()
                 match choix:
                     case "1":
-                        nom = input("Nom complet : ").strip()
-                        email = input("Email : ").strip()
-                        mdp = input("Mot de passe : ").strip()
-                        role = input("Role (ADMIN/GESTIONNAIRE/VISITEUR) : ").strip().upper()
-                        self.auth.inscription(nom, email, mdp, role)
+                        try:
+                            while True:
+                                nom = input("Nom complet : ").strip()
+                                if not nom.isalpha():
+                                    print("Le nom doit être composé uniquement de lettres. Veuillez réessayer.")
+                                else:
+                                    break
+                            
+                            while True:
+                                email = input("Email : ").strip().replace(" ", "")
+                                if "@" not in email:
+                                    print("email invalide")
+                                else:
+                                    break
+
+                            while True:
+                                mdp = input("Mot de passe : ").strip()
+                                if not mdp:
+                                    print("Mot de passe invalide")
+                                else:
+                                    break
+
+                            while True:
+                                role = input("Role (ADMIN/GESTIONNAIRE/VISITEUR) : ").strip().upper().replace(" ", "")
+                                if not role and role not in ["ADMIN", "GESTIONNAIRE", "VISITEUR"]:
+                                    print("role invalide")
+                                else:
+                                    break
+
+                            self.auth.inscription(nom, email, mdp, role)
+
+                        except Exception as e:
+                            print("Erreur lors de l'inscription",e)
                     
                     case "2":
-                        email = input("Email : ").strip()
-                        mdp = input("Mot de passe : ").strip()
-                        self.auth.login(email, mdp)
+                        try:
+                            while True:
+                                email = input("Email : ").strip().replace(" ", "")
+                                if "@" not in email:
+                                    print("email invalide")
+                                else:
+                                    break
+                            while True:
+                                mdp = input("Mot de passe : ").strip()
+                                if not mdp:
+                                    print("Mot de passe invalide")
+                                else:
+                                    break
+                            self.auth.login(email, mdp)
+                        except Exception as e:
+                            print("Erreur lors de la connexion", e)
                     
                     case "0":
                         print("Au revoir !")
@@ -69,7 +110,7 @@ class Application:
                     match choix:
 
                         case "1":
-                            date = input("Date (jj/mm/aaaa) : ").strip()
+                            date = input("Date (jj/mm/aaaa) : ").strip().replace(" ", "")
                             planning_jour = self.planning.afficher_planning_journalier(date)
 
                             if not planning_jour:
@@ -88,36 +129,74 @@ class Application:
                                         f"{ligne['type_evenement']:<12}")
 
                         case "2":
+                            self.planning.affichage_creneau()
+                            self.planning.affichage_groupe()
                             if role in ["ADMIN", "GESTIONNAIRE"]:
-                                id_creneau = int(input("ID Créneau : ").strip())
-                                id_groupe = int(input("ID Groupe : ").strip())
-                                date = input("Date (jj/mm/aaaa) : ").strip()
+                                try:
+                                    while True:
+                                        id_creneau = int(input("ID Créneau : ").strip().replace(" ", ""))
+                                        if not  id_creneau:
+                                            print("ID doit etre un nombre")
+                                        else:
+                                            break
+                                    
+                                    while True:
+                                        id_groupe = int(input("ID Groupe : ").strip().replace(" ", ""))
+                                        if not  id_creneau:
+                                            print("ID doit etre un nombre")
+                                        else:
+                                            break
 
-                                self.planning.reserver_creneau(
-                                    user, id_creneau, id_groupe, date
-                                )
+                                    date = input("Date (jj/mm/aaaa) : ").strip().replace(" ", "")
+
+                                    self.planning.reserver_creneau(
+                                        user, id_creneau, id_groupe, date
+                                    )
+                                except Exception as e:
+                                    print("Erreur lors de la reservation", e)
+
                             else:
                                 self.auth.logout()
                                 print("Déconnecté.")
 
                         case "3":
                             if role in ["ADMIN", "GESTIONNAIRE"]:
-                                nom = input("Nom du groupe : ").strip()
-                                responsable = input("Responsable : ").strip()
-                                type_evenement = input("Type d'événement : ").strip()
+                                try:
+                                    while True:
+                                        nom = input("Nom du groupe : ").strip()
+                                        if not nom.isalpha():
+                                            print("Nom invalide")
+                                        else:
+                                            break
 
-                                self.planning.ajouter_groupe(
-                                    user,
-                                    nom,
-                                    responsable,
-                                    type_evenement
-                                )
+                                    while True:
+                                        responsable = input("Responsable : ").strip()
+                                        if not responsable.isalpha():
+                                            print("Responsable invalide")
+                                        else:
+                                            break
+
+                                    while True:
+                                        type_evenement = input("Type d'événement (Atelier, Réunion, Conférence, Cours): ").strip().capitalize().replace(" ", "")
+                                        if type_evenement not in ["Atelier","Réunion", "Conférence","Cours"]:
+                                            print("Type d'evenement invalide")
+                                        else:
+                                            break
+
+                                    self.planning.ajouter_groupe(
+                                        user,
+                                        nom,
+                                        responsable,
+                                        type_evenement
+                                    )
+                                except Exception as e:
+                                    print ("Erreur lors de l'ajout du groupe")
                             else:
                                 print("Choix invalide.")
 
                         case "4":
                             if role in ["ADMIN", "GESTIONNAIRE"]:
-                                date = input("Date (jj/mm/aaaa) : ").strip()
+                                date = input("Date (jj/mm/aaaa) : ").strip().replace(" ","")
                                 self.export.export_planning(date)
                             else:
                                 print("Choix invalide.")
@@ -125,7 +204,6 @@ class Application:
                         case "5":
                             if role in ["ADMIN", "GESTIONNAIRE"]:
                                 self.auth.logout()
-                                print("Déconnecté.")
                             else:
                                 print("Choix invalide.")
 

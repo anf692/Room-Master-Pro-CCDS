@@ -4,6 +4,7 @@ from models.groupe import Groupe
 from database import BaseDeDonnees
 from datetime import datetime
 
+
 class PlanningService:
     def __init__(self, db: BaseDeDonnees):
         self._db = db
@@ -22,7 +23,6 @@ class PlanningService:
             return date_obj.strftime("%Y-%m-%d")
         except ValueError:
             raise ValueError("Format de date invalide ! Utilisez jj/mm/aaaa")
-
 
     def afficher_planning_journalier(self, date_fr):
         date_mysql = self._format_date_mysql(date_fr)
@@ -50,7 +50,6 @@ class PlanningService:
                 "type_evenement": ligne['type_evenement'] or "-"
             })
         return planning
-
 
     def ajouter_groupe(self, session_utilisateur, nom_groupe, responsable, type_evenement):
         if session_utilisateur is None:
@@ -85,7 +84,28 @@ class PlanningService:
         except Exception as e:
             print("Erreur lors de l'ajout du groupe :", e)
             return False
+        
 
+    def affichage_groupe(self):
+        self._db.curseur.execute("SELECT * FROM groupes")
+        resultats = self._db.curseur.fetchall()
+
+        print("Liste des groupes qui existe")
+        for groupe in resultats:
+            print(f"ID groupe: {groupe['id_groupe']} | Nom groupe: {groupe['nom_groupe']} | Responsable: ({groupe['responsable']})")
+        print("")    
+
+    def affichage_creneau(self):
+        self._db.curseur.execute("SELECT * FROM creneaux")
+        resultats = self._db.curseur.fetchall()
+
+        print("Liste des creneaux qui existe")
+        for creneau in resultats:
+            heure_debut = str(creneau["heure_debut"])
+            heure_fin = str(creneau["heure_fin"])
+
+            print(f"ID Créneau : {creneau['id_creneau']} | {heure_debut} - {heure_fin}")
+        print("")
 
     def reserver_creneau(self, session_utilisateur, id_creneau, id_groupe, date_fr):
         if session_utilisateur is None:

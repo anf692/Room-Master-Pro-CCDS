@@ -62,3 +62,8 @@ INSERT INTO creneaux (heure_debut, heure_fin) VALUES
 ('14:00:00', '16:00:00'),
 ('16:00:00', '18:00:00');
 
+
+select * from utilisateurs;
+select * from groupes;
+
+
